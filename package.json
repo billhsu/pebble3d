@@ -1,0 +1,28 @@
+{
+    "author": "MakeAwesomeHappen",
+    "dependencies": {},
+    "keywords": [
+        "pebble-app"
+    ],
+    "name": "pebble3d",
+    "pebble": {
+        "displayName": "pebble3d",
+        "enableMultiJS": true,
+        "messageKeys": {
+            "FRAME_DATA": 0
+        },
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "basalt"
+        ],
+        "uuid": "90df8c66-93bd-4e1c-8ee2-5b27f211d062",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
