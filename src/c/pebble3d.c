@@ -3,19 +3,16 @@
 static Window *s_main_window;
 #define WINDOW_WIDTH 144
 #define WINDOW_HEIGHT 168
-static int const FRAME_BUFFER_SIZE = 2048;
+static int const FRAME_BUFFER_SIZE = 1792;
 static int const DATA_COUNTS = 14;
 static uint8_t s_frame_buffer[WINDOW_HEIGHT][WINDOW_WIDTH];
 
-static int counter = 0;
-static void send_ack(bool first_time) {
+static void send_req() {
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
-    dict_write_int(iter, MESSAGE_KEY_ACK, &counter, sizeof(int), true);
-    if (!first_time) {
-        counter++;
-        counter %= DATA_COUNTS;
-    }
+    int dummy = 1;
+    dict_write_int(iter, MESSAGE_KEY_REQ, &dummy, sizeof(int), true);
+
     dict_write_end(iter);
     app_message_outbox_send();
 }
@@ -30,6 +27,7 @@ static void update_proc_frame_buffer(Layer *layer, GContext *ctx) {
         row += row_bytes;
     }
     graphics_release_frame_buffer(ctx, fb);
+    send_req();
 }
 
 static void in_received_handler(DictionaryIterator *iter, void *context) {
@@ -41,10 +39,11 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
         if (seq == DATA_COUNTS - 1) {
             layer_mark_dirty(window_get_root_layer(s_main_window));
             layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
+            APP_LOG(APP_LOG_LEVEL_DEBUG, "frame updated.");
         }
-        send_ack(false);
     } else if (ready) {
-        send_ack(true);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "ready.");
+        send_req();
     } else {
         APP_LOG(APP_LOG_LEVEL_WARNING, "dict_find failed!");
     }

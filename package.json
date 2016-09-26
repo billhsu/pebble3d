@@ -9,9 +9,9 @@
         "displayName": "pebble3d",
         "enableMultiJS": true,
         "messageKeys": {
-            "ACK": 2,
             "FRAME_DATA": 0,
-            "READY": 1
+            "READY": 1,
+            "REQ": 2
         },
         "projectType": "native",
         "resources": {
