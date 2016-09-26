@@ -27,6 +27,7 @@ static void update_proc_frame_buffer(Layer *layer, GContext *ctx) {
         row += row_bytes;
     }
     graphics_release_frame_buffer(ctx, fb);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "frame updated.");
     send_req();
 }
 
@@ -39,7 +40,6 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
         if (seq == DATA_COUNTS - 1) {
             layer_mark_dirty(window_get_root_layer(s_main_window));
             layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "frame updated.");
         }
     } else if (ready) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "ready.");

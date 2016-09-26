@@ -40,5 +40,6 @@ function sendBuffer(index) {
     },
     function(e) {
         console.log("fail: " + JSON.stringify(e));
+        sendBuffer(index);
     });
 }
