@@ -3,40 +3,59 @@
 static Window *s_main_window;
 #define WINDOW_WIDTH 144
 #define WINDOW_HEIGHT 168
-static int const FRAME_BUFFER_SIZE = WINDOW_HEIGHT/2 * WINDOW_WIDTH/2;
-static uint8_t s_frame_buffer[WINDOW_HEIGHT/2][WINDOW_WIDTH/2];
+static int const FRAME_BUFFER_SIZE = 2048;
+static int const DATA_COUNTS = 14;
+static uint8_t s_frame_buffer[WINDOW_HEIGHT][WINDOW_WIDTH];
+
+static int counter = 0;
+static void send_ack(bool first_time) {
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+    dict_write_int(iter, MESSAGE_KEY_ACK, &counter, sizeof(int), true);
+    if (!first_time) {
+        counter++;
+        counter %= DATA_COUNTS;
+    }
+    dict_write_end(iter);
+    app_message_outbox_send();
+}
 
 static void update_proc_frame_buffer(Layer *layer, GContext *ctx) {
     GBitmap *fb = graphics_capture_frame_buffer(ctx);
     GRect fb_bounds = gbitmap_get_bounds(fb);
     uint8_t *row = gbitmap_get_data(fb);
     uint16_t row_bytes = gbitmap_get_bytes_per_row(fb);
-    row += fb_bounds.origin.y * row_bytes;
     for (int16_t y = fb_bounds.origin.y; y < fb_bounds.size.h; y++) {
-        memcpy(row, s_frame_buffer[y%(WINDOW_HEIGHT/2)], row_bytes);
+        memcpy(row, s_frame_buffer[y], row_bytes);
         row += row_bytes;
     }
     graphics_release_frame_buffer(ctx, fb);
 }
 
 static void in_received_handler(DictionaryIterator *iter, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler");
     Tuple *frame = dict_find(iter, MESSAGE_KEY_FRAME_DATA);
+    Tuple *ready = dict_find(iter, MESSAGE_KEY_READY);
     if (frame) {
-        APP_LOG(APP_LOG_LEVEL_WARNING, "frame->length: %d", frame->length);
-        memcpy(s_frame_buffer, frame->value->data, frame->length);
-        layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
+        uint8_t seq = frame->value->data[0];
+        memcpy(s_frame_buffer[seq * 12], frame->value->data + 1, frame->length - 1);
+        if (seq == DATA_COUNTS - 1) {
+            layer_mark_dirty(window_get_root_layer(s_main_window));
+            layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
+        }
+        send_ack(false);
+    } else if (ready) {
+        send_ack(true);
     } else {
-        APP_LOG(APP_LOG_LEVEL_WARNING, "dict_find MESSAGE_KEY_FRAME_DATA failed!");
+        APP_LOG(APP_LOG_LEVEL_WARNING, "dict_find failed!");
     }
 }
 
 static void in_dropped_handler(AppMessageResult reason, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Dropped!");
+    APP_LOG(APP_LOG_LEVEL_ERROR, "App Message Dropped - Reason: %d", reason);
 }
 
 static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Failed to Send!");
+    APP_LOG(APP_LOG_LEVEL_ERROR, "App Message Failed to Send - Reason: %d", reason);
 }
 
 static void window_load(Window *window) {
