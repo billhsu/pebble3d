@@ -84,7 +84,7 @@ Renderer.drawTriangle = function(renderer, input, shader) {
             if (renderer.getBuffer(renderer.zbuffer, x, y) < depth) {
                 renderer.setBuffer(renderer.zbuffer, x, y, depth);
                 var val = Math.floor(depth * 255);
-                renderer.setBuffer(renderer.imageBuffer, x, y, shader.fragmentShader(barycentricCoord));
+                renderer.setBuffer(renderer.imageBuffer, x, y, val);
             }
         }
     }
