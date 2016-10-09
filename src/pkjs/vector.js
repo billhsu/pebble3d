@@ -1,3 +1,4 @@
+/* global module */
 // From https://github.com/evanw/lightgl.js/blob/master/src/vector.js
 
 // Provides a simple 3D vector class. Vector operations can be done using member
@@ -21,29 +22,25 @@ Vector.prototype = {
             return new Vector(this.x + v.x, this.y + v.y, this.z + v.z, this.w + v.w);
         else
             return new Vector(this.x + v, this.y + v, this.z + v, this.w + v);
-        }
-    ,
+    },
     subtract: function(v) {
         if (v instanceof Vector)
             return new Vector(this.x - v.x, this.y - v.y, this.z - v.z, this.w - v.w);
         else
             return new Vector(this.x - v, this.y - v, this.z - v, this.w - v);
-        }
-    ,
+    },
     multiply: function(v) {
         if (v instanceof Vector)
             return new Vector(this.x * v.x, this.y * v.y, this.z * v.z, this.w * v.w);
         else
             return new Vector(this.x * v, this.y * v, this.z * v, this.w * v);
-        }
-    ,
+    },
     divide: function(v) {
         if (v instanceof Vector)
             return new Vector(this.x / v.x, this.y / v.y, this.z / v.z, this.w / v.w);
         else
             return new Vector(this.x / v, this.y / v, this.z / v, this.w / v);
-        }
-    ,
+    },
     equals: function(v) {
         return this.x == v.x && this.y == v.y && this.z == v.z && this.w == v.w;
     },
@@ -181,3 +178,4 @@ Vector.fromArray = function(a) {
 Vector.angleBetween = function(a, b) {
     return a.angleTo(b);
 };
+module.exports = Vector;

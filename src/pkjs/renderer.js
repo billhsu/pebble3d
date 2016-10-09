@@ -1,10 +1,12 @@
+/* global module */
 // Shipeng Xu
 // http://billhsu.github.io
 // This is the JavaScript implementation of a simple OpenGL-like 3D rendering API.
 // Thanks to the below link:
 // https://github.com/ssloy/tinyrenderer/blob/master/our_gl.cpp
 "use strict";
-
+var Vector = require("./vector.js");
+var Matrix = require("./matrix.js");
 function Renderer(width, height) {
     this.width = width;
     this.height = height;
@@ -165,3 +167,4 @@ Renderer.getBoundingBox = function(vertices) {
     return [xMin, yMin, xMax, yMax];
 }
 
+module.exports = Renderer;

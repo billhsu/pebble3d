@@ -1,3 +1,5 @@
+var Renderer = require("./renderer.js");
+
 Pebble.addEventListener("ready",
     function(e) {
         Pebble.sendAppMessage({

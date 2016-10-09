@@ -1,10 +1,11 @@
+/* global module */
 //https://github.com/evanw/lightgl.js/blob/master/src/matrix.js
 
 // Represents a 4x4 matrix stored in row-major order that uses Float32Arrays
 // when available. Matrix operations can either be done using convenient
 // methods that return a new matrix for the result or optimized methods
 // that store the result in an existing matrix to avoid generating garbage.
-
+var Vector = require("./vector.js");
 var hasFloat32Array = (typeof Float32Array != 'undefined');
 
 // ### new GL.Matrix([elements])
@@ -407,3 +408,5 @@ Matrix.lookAt = function(ex, ey, ez, cx, cy, cz, ux, uy, uz, result) {
 
     return result;
 };
+
+module.exports = Matrix;
