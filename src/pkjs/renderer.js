@@ -55,12 +55,14 @@ Renderer.drawTriangle = function(renderer, input, shader) {
         console.log("input.length has to be 3.");
         return;
     }
+    console.log("."+JSON.stringify(input));
     var vertices = shader.vertexShader([input[0], input[1], input[2]]);
+    console.log("-"+JSON.stringify(vertices));
     for (var i = 0; i < vertices.length; i += 1) {
         vertices[i] = vertices[i].divide(vertices[i].w);
         vertices[i] = renderer.viewportMatrix.transformPoint(vertices[i]);
     }
-
+    console.log("+"+JSON.stringify(vertices));
     var boundingBox = Renderer.getBoundingBox(vertices);
     var xMin = boundingBox[0];
     var yMin = boundingBox[1];
@@ -88,7 +90,7 @@ Renderer.drawTriangle = function(renderer, input, shader) {
             }
         }
     }
-}
+};
 
 Renderer.barycentric = function(a, b, c, p) {
     var s0 = new Vector(c.x - a.x, b.x - a.x, a.x - p.x);
@@ -98,7 +100,7 @@ Renderer.barycentric = function(a, b, c, p) {
         return new Vector(1 - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
     }
     return new Vector(-1, 1, 1);
-}
+};
 
 Renderer.viewport = function(x, y, width, height) {
     var matrix = new Matrix();
@@ -119,12 +121,12 @@ Renderer.viewport = function(x, y, width, height) {
     matrix.m[14] = 0;
     matrix.m[15] = 1;
     return matrix;
-}
+};
 
 Renderer.lookat = function(eye, center, up) {
     up = up.unit();
     return Matrix.lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
-}
+};
 
 Renderer.project = function(fovy, zNear, zFar, width, height) {
     var f = 1 / Math.tan(fovy * Math.PI / 180 / 2);
@@ -136,7 +138,8 @@ Renderer.project = function(fovy, zNear, zFar, width, height) {
     matrix.m[11] = 2 * zFar * zNear / (zNear - zFar);
     matrix.m[14] = -1;
     return matrix;
-}
+};
+
 Renderer.getTexturePixel = function(texture, u, v) {
     if (u > 1) u = 1;
     if (u < 0) u = 0;
@@ -152,7 +155,8 @@ Renderer.getTexturePixel = function(texture, u, v) {
         texture.data[index + 2],
         texture.data[index + 3]
     ];
-}
+};
+
 Renderer.getBoundingBox = function(vertices) {
     var xMin = vertices[0].x,
         yMin = vertices[0].y;
@@ -165,6 +169,6 @@ Renderer.getBoundingBox = function(vertices) {
         yMax = Math.ceil(Math.max(yMax, vertices[i].y));
     }
     return [xMin, yMin, xMax, yMax];
-}
+};
 
 module.exports = Renderer;

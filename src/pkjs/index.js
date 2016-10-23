@@ -67,7 +67,7 @@ function sendBuffer(index) {
 }
 
 function renderFrame() {
-    console.log(JSON.stringify(demoApp.meshes.jeep.vertices));
+    console.log("renderFrame: " + demoApp.meshes.jeep.vertices.length + " vertices");
     renderer.clear();
     demoApp.shader.projectionMatrix = renderer.project(60, 0, 1000);
     var lookatMatrix = renderer.lookat(new Vector(Math.sin(radius) * 20, 10, Math.cos(radius) * 20), new Vector(0, 0, 0), new Vector(0, 1, 0));
@@ -79,7 +79,7 @@ function renderFrame() {
             demoApp.meshes.jeep.vertices[i + 2]
         ], demoApp.shader);
     }
-    return renderer.imageBuffer();
+    return renderer.imageBuffer;
 }
 
 function indexToVertexUV(index) {
