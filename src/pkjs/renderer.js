@@ -49,7 +49,7 @@ Renderer.prototype = {
         this.clearBuffer(this.zbuffer);
         this.clearBuffer(this.imageBuffer);
     }
-}
+};
 Renderer.drawTriangle = function(renderer, input, shader) {
     if (input.length != 3) {
         console.log("input.length has to be 3.");
