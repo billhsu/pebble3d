@@ -73,10 +73,10 @@ function renderFrame() {
     var lookatMatrix = renderer.lookat(new Vector(Math.sin(radius) * 20, 10, Math.cos(radius) * 20), new Vector(0, 0, 0), new Vector(0, 1, 0));
     demoApp.shader.modelView = lookatMatrix;
     radius += 0.1;
-    for (var i = 0; i < demoApp.meshes.jeep.vertices.length; i += 3) {
-        renderer.drawTriangle([demoApp.meshes.jeep.vertices[i],
-            demoApp.meshes.jeep.vertices[i + 1],
-            demoApp.meshes.jeep.vertices[i + 2]
+    for (var i = 0; i < demoApp.meshes.jeep.vertices.length; i += 9) {
+        renderer.drawTriangle([[demoApp.meshes.jeep.vertices[i],demoApp.meshes.jeep.vertices[i+1],demoApp.meshes.jeep.vertices[i+2]],
+            [demoApp.meshes.jeep.vertices[i + 3], demoApp.meshes.jeep.vertices[i + 4], demoApp.meshes.jeep.vertices[i + 5]],
+            [demoApp.meshes.jeep.vertices[i + 6], demoApp.meshes.jeep.vertices[i + 7], demoApp.meshes.jeep.vertices[i + 8]]
         ], demoApp.shader);
     }
     return renderer.imageBuffer;

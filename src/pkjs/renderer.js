@@ -55,14 +55,11 @@ Renderer.drawTriangle = function(renderer, input, shader) {
         console.log("input.length has to be 3.");
         return;
     }
-    console.log("."+JSON.stringify(input));
     var vertices = shader.vertexShader([input[0], input[1], input[2]]);
-    console.log("-"+JSON.stringify(vertices));
     for (var i = 0; i < vertices.length; i += 1) {
         vertices[i] = vertices[i].divide(vertices[i].w);
         vertices[i] = renderer.viewportMatrix.transformPoint(vertices[i]);
     }
-    console.log("+"+JSON.stringify(vertices));
     var boundingBox = Renderer.getBoundingBox(vertices);
     var xMin = boundingBox[0];
     var yMin = boundingBox[1];
