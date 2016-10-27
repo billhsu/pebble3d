@@ -36,10 +36,12 @@ var demoApp = {
 var radius = 0;
 
 var data = renderFrame();
+var sendBufferStartTime = performance.now();
 
 Pebble.addEventListener("appmessage", 
     function(e) {
         if (e.payload.REQ == 1) {
+        	sendBufferStartTime = performance.now()
             sendBuffer(0);
         }
     }
@@ -56,6 +58,8 @@ function sendBuffer(index) {
         if (index <= 12) {
             sendBuffer(index + 1);
         } else {
+        	console.log("Sending buffer took " + (performance.now() - sendBufferStartTime) + " milliseconds.");
+        	sendBufferStartTime = performance.now();
             index = 0;
             data = renderFrame();
         }
@@ -67,7 +71,8 @@ function sendBuffer(index) {
 }
 
 function renderFrame() {
-    console.log("renderFrame: " + demoApp.meshes.jeep.vertices.length + " vertices");
+	var t0 = performance.now();
+    console.log("renderFrame: " + demoApp.meshes.jeep.vertices.length/3 + " vertices");
     renderer.clear();
     demoApp.shader.projectionMatrix = renderer.project(60, 0, 1000);
     var lookatMatrix = renderer.lookat(new Vector(Math.sin(radius) * 20, 10, Math.cos(radius) * 20), new Vector(0, 0, 0), new Vector(0, 1, 0));
@@ -79,6 +84,9 @@ function renderFrame() {
             [demoApp.meshes.jeep.vertices[i + 6], demoApp.meshes.jeep.vertices[i + 7], demoApp.meshes.jeep.vertices[i + 8]]
         ], demoApp.shader);
     }
+    var t1 = performance.now();
+    console.log("Rendering took " + (t1 - t0) + " milliseconds.");
+
     return renderer.imageBuffer;
 }
 
