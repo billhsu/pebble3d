@@ -1,8 +1,8 @@
 var Renderer = require("./renderer.js");
 var Vector = require("./vector.js");
 var Matrix = require("./matrix.js");
-var canvasWidth = 144;
-var canvasHeight = 168;
+var canvasWidth = 36;
+var canvasHeight = 42;
 var renderer = new Renderer(canvasWidth, canvasHeight);
 
 Pebble.addEventListener("ready",
@@ -41,28 +41,21 @@ var sendBufferStartTime = performance.now();
 Pebble.addEventListener("appmessage", 
     function(e) {
         if (e.payload.REQ == 1) {
-        	sendBufferStartTime = performance.now()
+            sendBufferStartTime = performance.now()
             sendBuffer(0);
         }
     }
 );
 
 function sendBuffer(index) {
-    var current = [];
-    current[0] = index;
-    current = current.concat(data.slice(index * 12 * 144, (index + 1) * 12 * 144));
     Pebble.sendAppMessage({
-        'FRAME_DATA': current
+        'FRAME_DATA': data
     },
     function(e) {
-        if (index <= 12) {
-            sendBuffer(index + 1);
-        } else {
-        	console.log("Sending buffer took " + (performance.now() - sendBufferStartTime) + " milliseconds.");
-        	sendBufferStartTime = performance.now();
-            index = 0;
-            data = renderFrame();
-        }
+        console.log("Sending buffer took " + (performance.now() - sendBufferStartTime) + " milliseconds.");
+        sendBufferStartTime = performance.now();
+        index = 0;
+        data = renderFrame();
     },
     function(e) {
         console.log("fail: " + JSON.stringify(e));
@@ -71,7 +64,7 @@ function sendBuffer(index) {
 }
 
 function renderFrame() {
-	var t0 = performance.now();
+    var t0 = performance.now();
     console.log("renderFrame: " + demoApp.meshes.jeep.vertices.length/3 + " vertices");
     renderer.clear();
     demoApp.shader.projectionMatrix = renderer.project(60, 0, 1000);

@@ -1,10 +1,9 @@
 #include <pebble.h>
 
 static Window *s_main_window;
-#define WINDOW_WIDTH 144
-#define WINDOW_HEIGHT 168
+#define WINDOW_WIDTH 36
+#define WINDOW_HEIGHT 42
 static int const FRAME_BUFFER_SIZE = 1792;
-static int const DATA_COUNTS = 14;
 static uint8_t s_frame_buffer[WINDOW_HEIGHT][WINDOW_WIDTH];
 
 static void send_req() {
@@ -23,7 +22,9 @@ static void update_proc_frame_buffer(Layer *layer, GContext *ctx) {
     uint8_t *row = gbitmap_get_data(fb);
     uint16_t row_bytes = gbitmap_get_bytes_per_row(fb);
     for (int16_t y = fb_bounds.origin.y; y < fb_bounds.size.h; y++) {
-        memcpy(row, s_frame_buffer[y], row_bytes);
+        for(int16_t x = 0; x < 144; ++x) {
+            row[x] = s_frame_buffer[y/4][x/4];
+        }
         row += row_bytes;
     }
     graphics_release_frame_buffer(ctx, fb);
@@ -35,12 +36,9 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     Tuple *frame = dict_find(iter, MESSAGE_KEY_FRAME_DATA);
     Tuple *ready = dict_find(iter, MESSAGE_KEY_READY);
     if (frame) {
-        uint8_t seq = frame->value->data[0];
-        memcpy(s_frame_buffer[seq * 12], frame->value->data + 1, frame->length - 1);
-        if (seq == DATA_COUNTS - 1) {
-            layer_mark_dirty(window_get_root_layer(s_main_window));
-            layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
-        }
+        memcpy(s_frame_buffer, frame->value->data, frame->length);
+        layer_mark_dirty(window_get_root_layer(s_main_window));
+        layer_set_update_proc(window_get_root_layer(s_main_window), update_proc_frame_buffer);
     } else if (ready) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "ready.");
         send_req();
